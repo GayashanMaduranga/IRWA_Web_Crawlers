@@ -14,9 +14,9 @@ class JavadocSpider(scrapy.Spider):
         for link in links:
             rel_link = link.xpath('.//a/@href').extract_first()
             absolute_url = response.urljoin(rel_link)
-            yield Request(absolute_url, callback=self.parseDoc)
+            yield Request(absolute_url, callback=self.parse_doc)
 
-    def parseDoc(self, response):
+    def parse_doc(self, response):
         class_name = response.xpath('//h2/text()').extract_first()
         description = response.xpath('//*[@class="description"]/ul/li/div')
         field_detail = response.xpath('//*[@class="details"]/ul/li/ul/li/a[@name="field.detail"]/../ul/li')
