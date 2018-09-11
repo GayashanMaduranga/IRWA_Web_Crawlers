@@ -2,6 +2,7 @@
 import scrapy
 from bs4 import BeautifulSoup
 
+
 class JavadocTestSpider(scrapy.Spider):
     name = 'javaDoc-test'
     allowed_domains = ['docs.oracle.com']
@@ -15,63 +16,62 @@ class JavadocTestSpider(scrapy.Spider):
         method_detail = response.xpath('//*[@class="details"]/ul/li/ul/li/a[@name="method.detail"]/../ul/li')
 
         description_paras = description.xpath('.//p').extract()
-        
-        ## Scrape Description
+
+        # Scrape Description
         description_list = []
-        
+
         for p in description_paras:
             soup = BeautifulSoup(p, 'html.parser')
             description_list.append(soup.getText())
-            
-        ## Scrape Feilds
+
+        # Scrape Feilds
         field_dictionary_list = []
-        
+
         for field in field_detail:
             field_name = field.xpath('.//h4/text()').extract_first()
             field_details = field.xpath('.//div').extract_first()
             soup = BeautifulSoup(field_details, 'html.parser')
             field_details_new = soup.getText()
-            field_dictionary_list.append({'Field_name':field_name,'Field_details':field_details_new.rstrip('\n ')})
-        
-        ## Scrape Constructor Details
+            field_dictionary_list.append({'Field_name': field_name, 'Field_details': field_details_new.rstrip('\n ')})
+
+        # Scrape Constructor Details
         constructor_dictionary_list = []
-         
-        for cons in constructor_detail :
+
+        for cons in constructor_detail:
             constructor_name = cons.xpath('.//h4/text()').extract_first()
             constructor_details = cons.xpath('.//div').extract_first()
             soup = BeautifulSoup(constructor_details, 'html.parser')
             constructor_details_new = soup.getText()
-            constructor_dictionary_list.append({'Constructor_name':constructor_name,'Constructor_details':constructor_details_new.rstrip('\n ')})    
-        
-        ## Scrape Constructor Details
+            constructor_dictionary_list.append(
+                {'Constructor_name': constructor_name, 'Constructor_details': constructor_details_new.rstrip('\n ')})
+
+            # Scrape Constructor Details
         constructor_dictionary_list = []
-         
-        for cons in constructor_detail :
+
+        for cons in constructor_detail:
             constructor_name = cons.xpath('.//h4/text()').extract_first()
             constructor_details = cons.xpath('.//div').extract_first()
             soup = BeautifulSoup(constructor_details, 'html.parser')
             constructor_details_new = soup.getText()
-            constructor_dictionary_list.append({'Constructor_name':constructor_name,'Constructor_details':constructor_details_new.rstrip('\n ')})    
-        
-        ## Scrape Constructor Details
+            constructor_dictionary_list.append(
+                {'Constructor_name': constructor_name, 'Constructor_details': constructor_details_new.rstrip('\n ')})
+
+            # Scrape Constructor Details
         method_dictionary_list = []
-         
-        for method in method_detail :
+
+        for method in method_detail:
             method_name = method.xpath('.//h4/text()').extract_first()
             method_details = method.xpath('.//div').extract_first()
             soup = BeautifulSoup(method_details, 'html.parser')
             method_details_new = soup.getText()
-            method_dictionary_list.append({'Method_name':method_name,'Method_details':method_details_new.rstrip('\n ')})    
-        
-        
-        
-        url = response.url
-        
-        
-        yield{'URL':url,
-              'Class':class_name,
-              'Description':description_list,
-              'Constructor_Details' : constructor_dictionary_list,
-              'Field_Details':field_dictionary_list,
-              'Method_Details':method_dictionary_list}
+            method_dictionary_list.append(
+                {'Method_name': method_name, 'Method_details': method_details_new.rstrip('\n ')})
 
+        url = response.url
+
+        yield {'URL': url,
+               'Class': class_name,
+               'Description': description_list,
+               'Constructor_Details': constructor_dictionary_list,
+               'Field_Details': field_dictionary_list,
+               'Method_Details': method_dictionary_list}
