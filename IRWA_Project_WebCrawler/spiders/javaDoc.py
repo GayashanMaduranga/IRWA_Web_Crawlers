@@ -17,71 +17,86 @@ class JavadocSpider(scrapy.Spider):
             yield Request(absolute_url, callback=self.parse_doc)
 
     def parse_doc(self, response):
-        class_name = response.xpath('//h2/text()').extract_first()
+        # class_name = response.xpath('//h2/text()').extract_first()
         description = response.xpath('//*[@class="description"]/ul/li/div')
         field_detail = response.xpath('//*[@class="details"]/ul/li/ul/li/a[@name="field.detail"]/../ul/li')
         constructor_detail = response.xpath('//*[@class="details"]/ul/li/ul/li/a[@name="constructor.detail"]/../ul/li')
         method_detail = response.xpath('//*[@class="details"]/ul/li/ul/li/a[@name="method.detail"]/../ul/li')
+        title = response.xpath('//h2/text()').extract_first()
 
         description_paras = description.xpath('.//p').extract()
 
         # Scrape Description
-        description_list = []
+        # description_list = []
 
         for p in description_paras:
             soup = BeautifulSoup(p, 'html.parser')
-            description_list.append(soup.getText())
+            # description_list.append(soup.getText())
+
+            yield {'URL': response.url,
+                   'Language': 'JAVA',
+                   'Title': title,
+                   'Code': '',
+                   'Description': soup.getText()
+                   }
 
         # Scrape Fields
-        field_dictionary_list = []
+        # field_dictionary_list = []
 
         for field in field_detail:
-            field_name = field.xpath('.//h4/text()').extract_first()
+            field_name = 'field - ' + field.xpath('.//h4/text()').extract_first()
             field_details = field.xpath('.//div').extract_first()
             soup = BeautifulSoup(field_details, 'html.parser')
             field_details_new = soup.getText()
-            field_dictionary_list.append({'Field_name': field_name, 'Field_details': field_details_new.rstrip('\n ')})
+            # field_dictionary_list.append({'Field_name': field_name, 'Field_details': field_details_new.rstrip('\n ')})
+            yield {'URL': response.url,
+                   'Language': 'JAVA',
+                   'Title': title,
+                   'Code': field_name,
+                   'Description': field_details_new
+                   }
 
         # Scrape Constructor Details
-        constructor_dictionary_list = []
+        # constructor_dictionary_list = []
 
         for cons in constructor_detail:
-            constructor_name = cons.xpath('.//h4/text()').extract_first()
+            constructor_name = 'Constructor - ' + cons.xpath('.//h4/text()').extract_first()
             constructor_details = cons.xpath('.//div').extract_first()
             soup = BeautifulSoup(constructor_details, 'html.parser')
             constructor_details_new = soup.getText()
-            constructor_dictionary_list.append(
-                {'Constructor_name': constructor_name, 'Constructor_details': constructor_details_new.rstrip('\n ')})
+            # constructor_dictionary_list.append(
+            #     {'Constructor_name': constructor_name, 'Constructor_details': constructor_details_new.rstrip('\n ')})
+            yield {'URL': response.url,
+                   'Language': 'JAVA',
+                   'Title': title,
+                   'Code': constructor_name,
+                   'Description': constructor_details_new
+                   }
 
-            # Scrape Constructor Details
-        constructor_dictionary_list = []
-
-        for cons in constructor_detail:
-            constructor_name = cons.xpath('.//h4/text()').extract_first()
-            constructor_details = cons.xpath('.//div').extract_first()
-            soup = BeautifulSoup(constructor_details, 'html.parser')
-            constructor_details_new = soup.getText()
-            constructor_dictionary_list.append(
-                {'Constructor_name': constructor_name, 'Constructor_details': constructor_details_new.rstrip('\n ')})
-
-            # Scrape Constructor Details
-        method_dictionary_list = []
+        # Scrape Constructor Details
+        # method_dictionary_list = []
 
         for method in method_detail:
-            method_name = method.xpath('.//h4/text()').extract_first()
+            method_name = 'method - ' + method.xpath('.//h4/text()').extract_first()
             method_details = method.xpath('.//div').extract_first()
             soup = BeautifulSoup(method_details, 'html.parser')
             method_details_new = soup.getText()
-            method_dictionary_list.append(
-                {'Method_name': method_name, 'Method_details': method_details_new.rstrip('\n ')})
+            yield {'URL': response.url,
+                   'Language': 'JAVA',
+                   'Title': title,
+                   'Code': method_name,
+                   'Description': method_details_new
+                   }
+            # method_dictionary_list.append(
+            #     {'Method_name': method_name, 'Method_details': method_details_new.rstrip('\n ')})
 
-        url = response.url
-
-        yield {'URL': url,
-               'Class': class_name,
-               'Description': description_list,
-               'Constructor_Details': constructor_dictionary_list,
-               'Field_Details': field_dictionary_list,
-               'Method_Details': method_dictionary_list}
+        # url = response.url
+        #
+        # yield {'URL': url,
+        #        'Class': class_name,
+        #        'Description': description_list,
+        #        'Constructor_Details': constructor_dictionary_list,
+        #        'Field_Details': field_dictionary_list,
+        #        'Method_Details': method_dictionary_list}
 
 # deny_domains='google.com',allow='java'

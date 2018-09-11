@@ -49,6 +49,7 @@ class Java2sSpider(scrapy.Spider):
                 extracted_codes.append(soup.getText())
 
             yield {'URL': response.url,
+                   'Language': 'JAVA',
                    'Title': title,
                    'Code': extracted_codes,
                    'Description': description
